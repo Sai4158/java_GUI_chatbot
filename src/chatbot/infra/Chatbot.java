@@ -4,17 +4,32 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+
+import chatbot.component.DomainClassifier;
+import chatbot.component.WeatherIntentClassifier;
+import chatbot.component.FoodIntentClassifier;
+
+
+
 public class Chatbot {
 	
 	private String userName = "Sai";
 	private String botName = "Alexa";
 	
+	private DomainClassifier nowDomainClassifier;
+    private WeatherIntentClassifier weatherIntentClassifier;
+    private FoodIntentClassifier foodIntentClassifier;
+    
 	
 	public Chatbot(String userName, String botName) {
 		
 		this.userName = userName;
 		this.botName = botName;
-		
+	
+		// Initialize domain and intent classifiers
+        this.nowDomainClassifier = new DomainClassifier();
+        this.weatherIntentClassifier = new WeatherIntentClassifier();
+        this.foodIntentClassifier = new FoodIntentClassifier();
 	}
 	
 	/*
@@ -25,80 +40,54 @@ public class Chatbot {
 	 * example in the getResponse().
 	 */
 	
-	public String getResponse(String nowInputText) {
-		
-//		ADDED A CUSTOM RESPONSE!!
-		String nowResponse="Please try again, I don't understand";
-		if(nowInputText.toUpperCase().equals("WE ARE")) {
-			nowResponse = "Penn State!";
-			
-//		ADDED CUSTOM STAEMENTS!!
-		}if(nowInputText.equalsIgnoreCase("hi")) {
-			nowResponse = "Hello!";
-		}else if (nowInputText.equalsIgnoreCase("hello")) {
-		    nowResponse = "Hii!";
-		} 
-		else if (nowInputText.equalsIgnoreCase("how are you")) {
-		    nowResponse = "I'm doing well, thanks for asking!";
-		} 
-		
-		else if (nowInputText.equalsIgnoreCase("what is your name")) {
-		    nowResponse = "My name is TestBot!";
-		} 
-		
-		else if (nowInputText.equalsIgnoreCase("help")) {
-		    nowResponse = "How can I assist you today?";
-		} 
-		
-		else if (nowInputText.equalsIgnoreCase("goodbye")) {
-		    nowResponse = "Goodbye! Have a great day!";
-		} 
-		
-		else if (nowInputText.equalsIgnoreCase("what can you do")) {
-		    nowResponse = "I can chat with you and provide information!";
-		} 
-		
-		else if (nowInputText.equalsIgnoreCase("tell me a joke")) {
-		    nowResponse = "Why don't skeletons fight each other? They don't have the guts!";
-		} 
-		
-		else if (nowInputText.equalsIgnoreCase("thank you")) {
-		    nowResponse = "You're welcome!";
-		}
-		else if (nowInputText.equalsIgnoreCase("alexa")) {
-		    nowResponse = "Yes, I am here";
-		}
-		
-		
-//		Changed the default text here 
-		System.out.println("--------------");
-		System.out.println("Sai's Message: "+nowInputText);
-		
-		System.out.println("Alexa's Response: "+nowResponse);
-		System.out.println("--------------");
+	   /**
+     * Processes user input, identifies domain and intent, and formulates a response.
+     */
+    public String getResponse(String nowInputText) {
+        System.out.println("--------------");
+        System.out.println("User Message: " + nowInputText);
+        
+        String nowDomain = nowDomainClassifier.getLabel(nowInputText);
+        System.out.println("Domain: " + nowDomain);
+        
+        String nowIntent = "";
+        
+        if (!nowDomain.equals("Other")) { // In-domain message
+            if (nowDomain.equals("Food")) { // Food domain
+                nowIntent = foodIntentClassifier.getLabel(nowInputText);
+            } else if (nowDomain.equals("Weather")) { // Weather domain
+                nowIntent = weatherIntentClassifier.getLabel(nowInputText);
+            } else { // This shouldn't happen
+                System.err.println("Domain name is incorrect!");
+                System.exit(1);
+                return null;
+            }
+        } else { // Out-of-domain message
+            return "This message is out of the domains of the chatbot.";
+        }
+        
+        System.out.println("Intent: " + nowIntent);
+        String nowResponse = "Domain = " + nowDomain + "; Intent = " + nowIntent;
+        
+        System.out.println(botName + "'s Response: " + nowResponse);
+        System.out.println("--------------");
+        return nowResponse;
+    }
+    
+    // Getters and setters for userName and botName
+    public String getUserName() {
+        return userName;
+    }
 
-		return nowResponse;
-		
-	}
-	
-	public String getUserName() {
-		return userName;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public String getBotName() {
+        return botName;
+    }
 
-	public String getBotName() {
-		return botName;
-	}
-
-	public void setBotName(String botName) {
-		this.botName = botName;
-	}
-
-	
-	
-	
-
+    public void setBotName(String botName) {
+        this.botName = botName;
+    }
 }
