@@ -64,7 +64,7 @@ public class DomainClassifier {
 	    }
 
 	    // Count key words in a small Food dictionary
-	    String[] foodDictionary = new String[] {"food", "eat", "hungry"};
+	    String[] foodDictionary = new String[] {"food", "eat", "hungry", "order"};
 	    for (String foodKeyword : foodDictionary) {
 	        if (nowInputText.toLowerCase().contains(foodKeyword)) {
 	            // {"Other", "Weather", "Food"}, so scoreArray[2] indicates the score for Food domain
